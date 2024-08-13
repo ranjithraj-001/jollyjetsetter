@@ -16,9 +16,10 @@ export const Home = () => {
       <Carousel
         autoPlay
         infiniteLoop
-        interval={2000}
+        interval={3000}
         showThumbs={false}
         showStatus={false}
+        
       >
         <div className="image-container">
           <img src="homepage.jpg" alt="Profile" className="himages" />
@@ -49,9 +50,37 @@ export const Home = () => {
             </p>
           </div>
         </div>
-        {/* Add more images as needed */}
+        <div className="image-container">
+  <img src="water.jpg" alt="Paris Tour" className="himages" />
+  <div className="overlay-text">
+    <h2>Paris Tour Packages</h2>
+    <p>
+      Explore the romantic city of Paris, known for its art, fashion, and landmarks.
+    </p>
+  </div>
+</div>
+
+<div className="image-container">
+  <img src="forest.jpg" alt="New York Tour" className="himages" />
+  <div className="overlay-text">
+    <h2>New York Tour Packages</h2>
+    <p>
+      Discover the vibrant city life of New York, home to iconic skyscrapers and cultural attractions.
+    </p>
+  </div>
+</div>
+
+<div className="image-container">
+  <img src="jaguar.jpg" alt="Tokyo Tour" className="himages" />
+  <div className="overlay-text">
+    <h2>Tokyo Tour Packages</h2>
+    <p>
+      Experience the blend of traditional and modern in Tokyo, a city full of life and technology.
+    </p>
+  </div>
+</div>
       </Carousel>
-      <h3>Popular Packages</h3>
+      <h1>Popular Packages</h1>
       <div className="packages-container">
         <div className="image1">
           <img src="ktyndis.jpg" alt="India Tour" />

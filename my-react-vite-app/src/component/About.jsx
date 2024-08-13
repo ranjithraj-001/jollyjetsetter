@@ -1,50 +1,55 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './About.css';
 
 const About = () => {
   const [faqOpen, setFaqOpen] = useState({});
-  const [scrolling, setScrolling] = useState(0);
   const [isPaymentFormVisible, setPaymentFormVisible] = useState(false);
 
   const toggleFaq = (index) => {
     setFaqOpen((prev) => ({ ...prev, [index]: !prev[index] }));
   };
 
-  const handleScroll = () => {
-    setScrolling(window.scrollY);
-  };
-
   const togglePaymentForm = () => {
     setPaymentFormVisible(!isPaymentFormVisible);
   };
 
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const handlePaymentSubmit = (e) => {
+    e.preventDefault();
+    alert('The amount has been credited successfully!');
+    setPaymentFormVisible(false); // Close the payment form after submission
+  };
 
   const teamMembers = [
     {
-      name: 'John Doe',
+      name: 'Ranjith',
       title: 'Founder & CEO',
-      image: '/path-to-image.jpg',
-      description: 'John has over 20 years of experience in the travel industry, leading our team with passion and vision.',
+      image: 'ranjithraj.jpg',
+      description: 'Ranjith has over 20 years of experience in the travel industry, leading our team with passion and vision.',
       social: {
-        linkedin: 'https://linkedin.com/in/johndoe',
-        twitter: 'https://twitter.com/johndoe'
+        linkedin: 'https://linkedin.com/in/ranjith',
+        twitter: 'https://twitter.com/ranjith'
       }
     },
     {
-      name: 'Jane Smith',
-      title: 'Head of Operations',
-      image: '/path-to-image.jpg',
-      description: 'Jane ensures our travel operations run smoothly, with a focus on efficiency and customer satisfaction.',
+      name: 'Sanjay',
+      title: 'Head of Requirements',
+      image: 'sanjay.jpg',
+      description: 'Sanjay ensures our travel operations run smoothly, with a focus on efficiency and customer satisfaction.',
       social: {
-        linkedin: 'https://linkedin.com/in/janesmith',
-        twitter: 'https://twitter.com/janesmith'
+        linkedin: 'https://linkedin.com/in/raj',
+        twitter: 'https://twitter.com/raj'
       }
     },
-    // Add more team members as needed
+    {
+      name: 'Sabari ',
+      title: 'General Manager',
+      image: 'sab.jpg',
+      description: 'Sabari ensures our travel operations run smoothly, with a focus on efficiency and customer satisfaction.',
+      social: {
+        linkedin: 'https://linkedin.com/in/raj',
+        twitter: 'https://twitter.com/raj'
+      }
+    },
   ];
 
   const faqs = [
@@ -56,7 +61,6 @@ const About = () => {
       question: 'How can I book a travel package?',
       answer: 'You can book a travel package directly through our website or contact us via phone or email for personalized assistance.',
     },
-    // Add more FAQs as needed
   ];
 
   return (
@@ -150,30 +154,55 @@ const About = () => {
         <p>&copy; 2024 Travel Agency. All rights reserved.</p>
       </footer>
 
-      {/* Payment Form Toggle */}
       <button className="payment-button" onClick={togglePaymentForm}>
-        Make a Payment
+        Make a Fund Payment
       </button>
 
-      {/* Payment Form */}
       <div className={`payment-form-container ${isPaymentFormVisible ? 'show' : ''}`}>
         <button className="close-button" onClick={togglePaymentForm}>Close</button>
-        <form className="payment-form">
+        <form className="payment-form" onSubmit={handlePaymentSubmit}>
           <h2>Payment Information</h2>
           <label htmlFor="name">Name</label>
           <input type="text" id="name" name="name" placeholder="John Doe" required />
 
+          <label htmlFor="amount">Amount</label>
+          <input type="number" id="amount" name="amount" placeholder="Enter Amount" required />
+
           <label htmlFor="card-number">Card Number</label>
-          <input type="text" id="card-number" name="card-number" placeholder="1234 5678 9012 3456" required />
+          <input
+            type="text"
+            id="card-number"
+            name="card-number"
+            placeholder="1234 5678 9012 3456"
+            required
+            pattern="\d{4} \d{4} \d{4} \d{4}"
+            title="Card number should be in the format: 1234 5678 9012 3456"
+          />
 
           <div className="payment-form-group">
             <div>
-              <label htmlFor="expiry">Expiry Date</label>
-              <input type="text" id="expiry" name="expiry" placeholder="MM/YY" required />
+              <label htmlFor="expiry">Expiry Date (MM/YY)</label>
+              <input
+                type="text"
+                id="expiry"
+                name="expiry"
+                placeholder="MM/YY"
+                required
+                pattern="(0[1-9]|1[0-2])\/\d{2}"
+                title="Expiry date should be in the format: MM/YY"
+              />
             </div>
             <div>
               <label htmlFor="cvv">CVV</label>
-              <input type="text" id="cvv" name="cvv" placeholder="123" required />
+              <input
+                type="text"
+                id="cvv"
+                name="cvv"
+                placeholder="123"
+                required
+                pattern="\d{3}"
+                title="CVV should be exactly 3 digits"
+              />
             </div>
           </div>
 

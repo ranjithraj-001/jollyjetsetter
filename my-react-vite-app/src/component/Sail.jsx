@@ -1,6 +1,7 @@
-// src/component/Sail.jsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Carousel } from 'react-responsive-carousel';
+import 'react-responsive-carousel/lib/styles/carousel.min.css'; // Import carousel styles
 import './Sail.css';
 
 const Sail = () => {
@@ -14,7 +15,7 @@ const Sail = () => {
     { src: 's6.jpg', name: 'Eastern Sea-Cation', location: 'Kolkata - at Sea - Vizag', duration: '6 days', groupSize: '28', languages: 'English, Bengali' },
     { src: 's7.jpg', name: 'South India Cruise', location: 'Chennai - Kochi - at Sea', duration: '9 days', groupSize: '32', languages: 'English, Malayalam' },
     { src: 's8.jpg', name: 'Heritage Cruise', location: 'Mumbai - Diu - at Sea', duration: '7 days', groupSize: '30', languages: 'English, Gujarati' },
-    { src: 's9.jpg', name: 'Beach Cruise', location: 'Goa - at Sea - Mumbai', duration: '4 days', groupSize: '22', languages: 'English, Konkani' }
+    { src: 's9.jpg', name: 'Beach Cruise', location: 'Goa - at Sea - Mumbai' }
   ];
 
   const handleNavigateToEnquire = (pkg) => {
@@ -24,8 +25,29 @@ const Sail = () => {
   return (
     <div className="page">
       <div className="background-container">
-        <h1 className="heading1">Welcome to Our Cruises</h1>
-        <p className="text">Explore the world's most beautiful destinations with us!</p>
+        <Carousel
+          autoPlay
+          infiniteLoop
+          showThumbs={false}
+          showStatus={false}
+          showArrows={false}
+          interval={5000}
+          transitionTime={1000}
+        >
+          <div>
+            <img src="img123.jpg" alt="Background 1" />
+          </div>
+          <div>
+            <img src="s5.jpg" alt="Background 2" />
+          </div>
+          <div>
+            <img src="s3.jpg" alt="Background 3" />
+          </div>
+        </Carousel>
+        <div className="overlay">
+          <h1 className="heading1">Welcome to Our Cruises</h1>
+          <p className="text">Explore the world's most beautiful destinations with us!</p>
+        </div>
       </div>
       <div className="main-content">
         <div className="text-content">
@@ -72,7 +94,7 @@ const Sail = () => {
               <h3 className="package-name">{pkg.name}</h3>
               <p className="location">{pkg.location}</p>
               <button onClick={() => handleNavigateToEnquire(pkg)} className="book-now">
-                Book Now
+                Book-Now
               </button>
             </div>
           </div>

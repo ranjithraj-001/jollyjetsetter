@@ -1,9 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './ContactPage.css';
-const submitForm = async (data) => {
-  console.log('Form submitted:', data);
-  return new Promise((resolve) => setTimeout(resolve, 2000));
-};
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -15,83 +12,49 @@ const ContactPage = () => {
     travelDates: '',
     message: ''
   });
-  const [errors, setErrors] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    inquiryType: '',
-    destination: '',
-    travelDates: '',
-    message: '',
-    global: ''
-  });
-  const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
 
-  // Validate form data
+  const [errors, setErrors] = useState({});
+  const [submitted, setSubmitted] = useState(false);
+  const [contacts, setContacts] = useState([]);
+  const [selectedContactId, setSelectedContactId] = useState(null);
+
   const validate = () => {
-    let valid = true;
-    let errors = {
-      name: '',
-      email: '',
-      phone: '',
-      inquiryType: '',
-      destination: '',
-      travelDates: '',
-      message: ''
+    const errors = {};
+    const validators = {
+      name: value => !value && 'Name is required',
+      email: value => !value ? 'Email is required' : !/\S+@\S+\.\S+/.test(value) && 'Email is invalid',
+      phone: value => !value ? 'Phone number is required' : !/^\d{10}$/.test(value) && 'Phone number is invalid',
+      inquiryType: value => !value && 'Inquiry type is required',
+      destination: value => !value && 'Travel destination is required',
+      travelDates: value => !value && 'Travel dates are required',
+      message: value => !value && 'Message is required'
     };
 
-    if (!formData.name) {
-      errors.name = 'Name is required';
-      valid = false;
-    }
-    if (!formData.email) {
-      errors.email = 'Email is required';
-      valid = false;
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = 'Email is invalid';
-      valid = false;
-    }
-    if (!formData.phone) {
-      errors.phone = 'Phone number is required';
-      valid = false;
-    } else if (!/^\d{10}$/.test(formData.phone)) {
-      errors.phone = 'Phone number is invalid';
-      valid = false;
-    }
-    if (!formData.inquiryType) {
-      errors.inquiryType = 'Inquiry type is required';
-      valid = false;
-    }
-    if (!formData.destination) {
-      errors.destination = 'Travel destination is required';
-      valid = false;
-    }
-    if (!formData.travelDates) {
-      errors.travelDates = 'Travel dates are required';
-      valid = false;
-    }
-    if (!formData.message) {
-      errors.message = 'Message is required';
-      valid = false;
+    for (const [key, validateFn] of Object.entries(validators)) {
+      const error = validateFn(formData[key]);
+      if (error) errors[key] = error;
     }
 
     setErrors(errors);
-    return valid;
+    return Object.keys(errors).length === 0;
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const handleChange = ({ target: { name, value } }) => {
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validate()) {
-      setLoading(true);
       try {
-        await submitForm(formData);
-        setSubmitted(true);
+        if (selectedContactId) {
+          await axios.put(`http://localhost:5000/api/contactmodel/${selectedContactId}`, formData);
+          setSubmitted(true);
+          setSelectedContactId(null);
+        } else {
+          await axios.post('http://localhost:5000/api/contactmodel', formData);
+          setSubmitted(true);
+        }
         setFormData({
           name: '',
           email: '',
@@ -101,15 +64,31 @@ const ContactPage = () => {
           travelDates: '',
           message: ''
         });
+        fetchContacts();
       } catch (error) {
-        console.error('Form submission error:', error);
-        setErrors((prev) => ({ ...prev, global: 'An error occurred. Please try again.' }));
-      } finally {
-        setLoading(false);
+        setErrors({ global: 'An error occurred while submitting the form. Please try again.' });
       }
     }
   };
-
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/contactmodel/${id}`);
+      fetchContacts();
+    } catch (error) {
+      setErrors({ global: 'An error occurred while deleting the contact. Please try again.' });
+    }
+  };
+  const fetchContacts = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/contactmodel');
+      setContacts(response.data);
+    } catch (error) {
+      setErrors({ global: 'An error occurred while fetching contacts. Please try again.' });
+    }
+  };
+  useEffect(() => {
+    fetchContacts();
+  }, []);
   return (
     <div className="contact-container">
       <h1>Contact Us</h1>
@@ -129,60 +108,34 @@ const ContactPage = () => {
             style={{ border: 0 }}
             allowFullScreen
             loading="lazy"
-            title="Map Location"
-          ></iframe>
+            title="Map Location"/>
         </div>
       </div>
       <div className="contact-form">
-        <h2>Send Us a Message</h2>
-        {submitted && !loading && <p className="success-message">Thank you for your message! We will get back to you soon.</p>}
+        <h2>{selectedContactId ? 'Update Your Message' : 'Send Us a Message'}</h2>
+        {submitted && <p className="success-message">Thank you for your message! We will get back to you soon.</p>}
         {errors.global && <p className="error-message">{errors.global}</p>}
         <form onSubmit={handleSubmit}>
-          <label htmlFor="name">Name</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            aria-required="true"
-            className={errors.name ? 'error' : ''}
-          />
-          {errors.name && <p className="error-message">{errors.name}</p>}
-
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            aria-required="true"
-            className={errors.email ? 'error' : ''}
-          />
-          {errors.email && <p className="error-message">{errors.email}</p>}
-
-          <label htmlFor="phone">Phone</label>
-          <input
-            type="tel"
-            id="phone"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-            aria-required="true"
-            className={errors.phone ? 'error' : ''}
-          />
-          {errors.phone && <p className="error-message">{errors.phone}</p>}
-
+          {['name', 'email', 'phone', 'destination', 'travelDates'].map(field => (
+            <div key={field}>
+              <label htmlFor={field}>{field.charAt(0).toUpperCase() + field.slice(1)}</label>
+              <input
+                type={field === 'email' ? 'email' : 'text'}
+                id={field}
+                name={field}
+                value={formData[field]} 
+                onChange={handleChange}
+                className={errors[field] ? 'error' : ''}/>
+              {errors[field] && <p className="error-message">{errors[field]}</p>}
+            </div>
+          ))}
           <label htmlFor="inquiryType">Inquiry Type</label>
           <select
             id="inquiryType"
             name="inquiryType"
             value={formData.inquiryType}
             onChange={handleChange}
-            aria-required="true"
-            className={errors.inquiryType ? 'error' : ''}
-          >
+            className={errors.inquiryType ? 'error' : ''} >
             <option value="">Select an inquiry type</option>
             <option value="booking">Booking</option>
             <option value="information">Information</option>
@@ -190,46 +143,73 @@ const ContactPage = () => {
             <option value="feedback">Feedback</option>
           </select>
           {errors.inquiryType && <p className="error-message">{errors.inquiryType}</p>}
-
-          <label htmlFor="destination">Travel Destination</label>
-          <input
-            type="text"
-            id="destination"
-            name="destination"
-            value={formData.destination}
-            onChange={handleChange}
-            aria-required="true"
-            className={errors.destination ? 'error' : ''}
-          />
-          {errors.destination && <p className="error-message">{errors.destination}</p>}
-
-          <label htmlFor="travelDates">Preferred Travel Dates</label>
-          <input
-            type="text"
-            id="travelDates"
-            name="travelDates"
-            value={formData.travelDates}
-            onChange={handleChange}
-            aria-required="true"
-            className={errors.travelDates ? 'error' : ''}
-          />
-          {errors.travelDates && <p className="error-message">{errors.travelDates}</p>}
-
           <label htmlFor="message">Message</label>
           <textarea
             id="message"
             name="message"
             value={formData.message}
             onChange={handleChange}
-            aria-required="true"
-            className={errors.message ? 'error' : ''}
-          />
+            className={errors.message ? 'error' : ''}/>
           {errors.message && <p className="error-message">{errors.message}</p>}
 
-          <button type="submit" disabled={loading}>
-            {loading ? 'Submitting...' : 'Submit'}
-          </button>
+          <button type="submit">{selectedContactId ? 'Update' : 'Submit'}</button>
+          {selectedContactId && (
+            <button
+              type="button"
+              onClick={() => handleDelete(selectedContactId)}
+              className="delete-button">
+              Delete
+            </button>
+          )}
         </form>
+      </div>
+      <div className="submitted-contacts">
+        <h2>Submitted Contacts</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Inquiry Type</th>
+              <th>Destination</th>
+              <th>Travel Dates</th>
+              <th>Message</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {contacts.map(contact => (
+              <tr key={contact._id}>
+                <td>{contact.name}</td>
+                <td>{contact.email}</td>
+                <td>{contact.phone}</td>
+                <td>{contact.inquiryType}</td>
+                <td>{contact.destination}</td>
+                <td>{contact.travelDates}</td>
+                <td>{contact.message}</td>
+                <td>
+                  <button
+                    onClick={() => {
+                      setFormData({
+                        name: contact.name,
+                        email: contact.email,
+                        phone: contact.phone,
+                        inquiryType: contact.inquiryType,
+                        destination: contact.destination,
+                        travelDates: contact.travelDates,
+                        message: contact.message
+                      });
+                      setSelectedContactId(contact._id);
+                    }}
+                  >
+                    Edit
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

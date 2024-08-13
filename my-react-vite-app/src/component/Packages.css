@@ -95,15 +95,46 @@
   font-size: 20px;
   margin: 10px 0;
   color: black !important; /* Ensure color is applied */
-  font-family:Georgia, 'Times New Roman', Times, serif; /* Apply the font */
+  font-family: Georgia, 'Times New Roman', Times, serif; /* Apply the font */
 }
 
-/* Style for package duration */
 .package-duration {
   font-size: 16px;
   color: red;
 }
 
-.package-card a{
+/* Ensure package card links do not have text decoration */
+.package-card a {
   text-decoration: none;
+}
+
+/* Responsive styles */
+@media (max-width: 1024px) {
+  .packages-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .search-box input {
+    width: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .packages-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .search-box {
+    display: block;
+    text-align: center;
+  }
+
+  .search-box input {
+    width: 100%;
+    margin: 0 0 10px 0;
+  }
+
+  .search-button {
+    width: 100%;
+  }
 }

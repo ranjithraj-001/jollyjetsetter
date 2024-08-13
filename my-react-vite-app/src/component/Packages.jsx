@@ -4,7 +4,6 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import axios from 'axios';
 import './Packages.css';
-
 export const Packages = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [packages, setPackages] = useState([]);
@@ -28,7 +27,6 @@ export const Packages = () => {
   const handleCardClick = (id) => {
     navigate('/stayconnect');
   };
-
   return (
     <div className="packages-container">
       <section className="search-section">
@@ -36,23 +34,21 @@ export const Packages = () => {
         <div className="search-box">
           <input
             type="text"
-            placeholder="Where are you going?"
+            placeholder="🌏💫Where are you going?"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+            onChange={(e) => setSearchQuery(e.target.value)}/>
           <button className="search-button">Search</button>
         </div>
       </section>
       <section className="packages-list">
-        <h2>{/* {filteredPackages.length}  */}500 Tour places</h2>
+        <h2>500 Tour places</h2>
         <div className="packages-grid">
           {filteredPackages.map((pkg) => (
             <div
               key={pkg.id}
               className="package-card"
-              onClick={() => handleCardClick(pkg.id)}
-            >
-              <img src={pkg.image} alt={pkg.title} />
+              onClick={() => handleCardClick(pkg.id)}>
+              <img src={pkg.image} alt={pkg.title}/>
               <div className="package-info">
                 <p className="package-location">
                   <LocationOnIcon style={{ verticalAlign: 'middle', marginRight: '8px' }} />
